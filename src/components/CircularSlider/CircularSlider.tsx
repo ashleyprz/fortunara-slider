@@ -76,7 +76,7 @@ export function CircularSlider({cards}: CircularSliderProps) {
         // Angles in which the tire should snap to always show 3 images
         const snapAngles = [-300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300];
         
-        // Find the closest angle from the snap angles
+        // Function to find the closest angle without normalizing
         const findClosestAngle = (currentRotation: number, snapAngles: number[]) => {
             let closestAngle = snapAngles[0];
             let minDistance = Math.abs(currentRotation - snapAngles[0]);
@@ -89,9 +89,9 @@ export function CircularSlider({cards}: CircularSliderProps) {
                 }
             });
             
-            // Verify angles +360 and -360 to ensure snapping works correctly
+            // Also check "equivalent" angles by adding/subtracting 360
             snapAngles.forEach(angle => {
-                // Verify angle + 360
+                // Check angle + 360
                 const angleUp = angle + 360;
                 const distanceUp = Math.abs(currentRotation - angleUp);
                 if (distanceUp < minDistance) {
@@ -99,7 +99,7 @@ export function CircularSlider({cards}: CircularSliderProps) {
                     closestAngle = angleUp;
                 }
                 
-                // Verify angle - 360
+                // Check angle - 360
                 const angleDown = angle - 360;
                 const distanceDown = Math.abs(currentRotation - angleDown);
                 if (distanceDown < minDistance) {
@@ -117,6 +117,24 @@ export function CircularSlider({cards}: CircularSliderProps) {
         
         // Set the rotation to the closest angle
         setRotation(closestAngle);
+    };
+
+    // Function to determine if a card is in the central position (0 degrees)
+    const getCardProperties = (cardIndex: number) => {
+        const cardAngle = (cardIndex * 360) / cards.length;
+        const totalRotation = rotation + cardAngle;
+        
+        // Normalize the angle to a range of -180 to 180
+        const normalizedAngle = ((totalRotation % 360) + 360) % 360;
+        const adjustedAngle = normalizedAngle > 180 ? normalizedAngle - 360 : normalizedAngle;
+        
+        // If the angle is very close to 0 (within a tolerance range)
+        const tolerance = 5; // 5 degrees of tolerance
+        if (Math.abs(adjustedAngle) <= tolerance) {
+            return { scale: 1.5, opacity: 1 };
+        }
+        
+        return { scale: 1, opacity: 0.5 };
     };
 
     // Event listeners for mouse and touch
@@ -154,12 +172,14 @@ export function CircularSlider({cards}: CircularSliderProps) {
                 <div
                     key={`point-${index}`}
                     className="guide-point"
-                    style={{transform: `rotate(${(index * 360) / cards.length}deg)`}}
+                    style={{
+                        transform: `rotate(${(index * 360) / cards.length}deg)`
+                    }}
                 />
             ))}
         </div>
         
-        {/* Contenedor para las cards */}
+        {/* Container for the cards */}
         <div 
             className="cards-orbit"
             style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
@@ -168,9 +188,17 @@ export function CircularSlider({cards}: CircularSliderProps) {
                 <div
                     key={`card-${index}`}
                     className="card-container"
-                    style={{transform: `rotate(${(index * 360) / cards.length}deg)`}}
+                    style={{
+                        transform: `rotate(${(index * 360) / cards.length}deg)`
+                    }}
                 >
-                    <div className="card-wrapper">
+                    <div 
+                        className="card-wrapper"
+                        style={{
+                            transform: `scale(${getCardProperties(index).scale})`,
+                            opacity: getCardProperties(index).opacity
+                        }}
+                    >
                         <Card title={card.title} image={card.image} />
                     </div>
                 </div>
