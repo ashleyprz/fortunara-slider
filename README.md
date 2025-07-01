@@ -1,69 +1,97 @@
-# React + TypeScript + Vite
+# Fortunara CircularSlider
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive, interactive circular slider component built as a technical assessment for **Fortunara**. Features a draggable tire interface with orbiting cards that snap to predefined positions.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project replicates a circular interface where users can drag a central tire to rotate surrounding elements. The component provides smooth interactions, responsive design, and modular architecture suitable for production environments.
 
-## Expanding the ESLint configuration
+**Built by:** Ashley Rojas  
+**Purpose:** Technical assessment for Fortunara recruitment process  
+**Technologies:** React, TypeScript, Vite, CSS3
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Multi-input support (mouse and touch)
+- Fully responsive design
+- Smart snapping to predefined positions
+- Smooth CSS transitions
+- Visual feedback for centered cards
+- Optimized performance with memoized calculations
+- Modular architecture with reusable hooks
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Quick Start
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+```bash
+git clone [repository-url]
+cd fortunara-slider
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Visit `http://localhost:5173` to see the application.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── components/CircularSlider/    # Main component
+├── hooks/                        # Reusable drag and slider logic
+├── utils/                        # Angle calculations and math utilities
+└── assets/                       # Optimized images
+```
+
+## Technical Implementation
+
+### Architecture
+The component is built using a modular approach:
+- **Custom Hooks**: `useDrag` and `useCircularSlider` for reusable logic
+- **Utility Functions**: Pure functions for angle calculations and math operations
+- **TypeScript**: Full type safety throughout the application
+
+### Performance Optimizations
+- WebP image format for reduced file sizes
+- Memoized calculations with `useCallback`
+- Proper event listener cleanup
+- CSS custom properties for responsive scaling
+
+### Key Features
+- Drag functionality from multiple areas (tire, cards, container)
+- Automatic snapping to predefined angles
+- Responsive design using relative units
+- Touch support for mobile devices
+
+## Development
+
+```bash
+npm run dev        # Development server
+npm run build      # Production build
+npm run preview    # Preview production build
+```
+
+## Assessment Requirements
+
+**Completed:**
+- Visual replication of provided reference
+- Responsive design implementation
+- React-based solution
+- Drag functionality with smooth interactions
+- Performance optimizations
+
+**Additional Enhancements:**
+- TypeScript implementation
+- Modular architecture
+- Comprehensive documentation
+- Production-ready build configuration
+
+---
+
+**Ashley Rojas**  
+*Informática y Tecnología Multimedia - Universidad de Costa Rica*  
+Technical Assessment for Fortunara • 2025
