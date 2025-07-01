@@ -12,15 +12,15 @@ const cardsData = [
 function App() {
     return (
         <>
-            <nav id='nav'>
-                <p>Nav</p>
-            </nav>
-            <main>
-                <CircularSlider cards={cardsData} />
-            </main>
-            <footer id='footer'>
-                <p>Este es un párrafo dentro del footer</p>
-            </footer>
+          <nav id='nav'>
+            <p>Nav</p>
+          </nav>
+          <main>
+            <CircularSlider cards={cardsData} />
+          </main>
+          <footer id='footer'>
+            <p>Este es un párrafo dentro del footer</p>
+          </footer>
         </>
     )
 }

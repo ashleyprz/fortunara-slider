@@ -29,11 +29,30 @@
     position: absolute;
     bottom: calc(var(--circle-size) / -2);
     left: 50%;
-    transform: translateX(-50%);
     width: var(--circle-size);
     height: var(--circle-size);
     border: 3px solid red;
     border-radius: 50%;
     background: transparent;
     z-index: 1;
+}
+
+.guide-point {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+    transform-origin: 50% calc(var(--circle-size) / 2 + 4px);
+    margin-left: -4px;
+}
+
+.red-circle {
+    cursor: grab;
+}
+
+.red-circle:active {
+    cursor: grabbing;
 }
