@@ -17,8 +17,6 @@
     height: calc(var(--tire-size)/2);
     overflow: hidden;
     cursor: grab;
-
-    user-select: none; /* Prevent text selection */
 }
 
 .tire-container:active {
@@ -29,7 +27,14 @@
     width: var(--tire-size);
     object-fit: cover;
     object-position: center top;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     pointer-events: none;
+
+    transition: transform 0.3s ease-out;
 }
 
 .red-circle {
@@ -42,6 +47,8 @@
     border-radius: 50%;
     background: transparent;
     z-index: 1;
+
+    transition: transform 0.3s ease-out;
 }
 
 .guide-point {
@@ -62,4 +69,81 @@
 
 .red-circle:active {
     cursor: grabbing;
+}
+
+/* Agregar estas reglas a tu CircularSlider.css existente */
+
+.cards-orbit {
+    position: absolute;
+    bottom: calc(var(--circle-size) / -2);
+    left: 50%;
+    width: var(--circle-size);
+    height: var(--circle-size);
+    z-index: 3; /* Por encima del tire y red-circle */
+    pointer-events: none; /* Las cards no interfieren con el drag */
+    
+    transition: transform 0.3s ease-out;
+}
+
+.card-container {
+    position: absolute;
+    top: -60px; /* Ajusta esta distancia según el tamaño de tus cards */
+    left: 50%;
+    transform-origin: 50% calc(var(--circle-size) / 2 + 60px);
+    margin-left: -80px; /* La mitad del ancho estimado de la card */
+    
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.card-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.card-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card-wrapper {
+    transition: transform 0.3s ease-out;
+}
+
+/* Asegurar que las cards no se salgan del contenedor */
+.card-container .card {
+    max-width: 160px; /* Ajusta según tus necesidades */
+    transform-origin: center;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .circular-slider {
+        --tire-size: 20rem;
+        --circle-padding: 1rem;
+    }
+    
+    .card-container {
+        top: -45px;
+        margin-left: -60px;
+    }
+    
+    .card-container .card {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .circular-slider {
+        --tire-size: 20rem;
+        --circle-padding: 0.8rem;
+    }
+    
+    .card-container {
+        top: -35px;
+        margin-left: -50px;
+    }
+    
+    .card-container .card {
+        max-width: 100px;
+    }
 }
