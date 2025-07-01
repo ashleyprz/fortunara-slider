@@ -16,13 +16,20 @@
     z-index: 2;
     height: calc(var(--tire-size)/2);
     overflow: hidden;
+    cursor: grab;
+
+    user-select: none; /* Prevent text selection */
+}
+
+.tire-container:active {
+    cursor: grabbing;
 }
 
 .tire-image {
     width: var(--tire-size);
     object-fit: cover;
     object-position: center top;
-    height: calc(var(--tire-size)/2 - 2rem);
+    pointer-events: none;
 }
 
 .red-circle {

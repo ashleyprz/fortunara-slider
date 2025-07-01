@@ -56,25 +56,33 @@ export function CircularSlider({cards}: CircularSliderProps) {
     }, [isDragging, startAngle]);
 
     return (
-        <div className="circular-slider" ref={containerRef}>
-            <div 
-                className="red-circle"
-                style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
-                onMouseDown={handleMouseDown}
-            >
-                {cards.map((_, index) => (
-                    <div
-                        key={`point-${index}`}
-                        className="guide-point"
-                        style={{
-                            transform: `rotate(${(index * 360) / cards.length}deg)`
-                        }}
-                    />
-                ))}
-            </div>
-            <div className="tire-container">
-                <img src={Tire} alt="Neumático" className="tire-image" />
-            </div>
+    <div className="circular-slider" ref={containerRef}>
+        <div 
+            className="red-circle"
+            style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
+            onMouseDown={handleMouseDown}
+        >
+            {cards.map((_, index) => (
+                <div
+                    key={`point-${index}`}
+                    className="guide-point"
+                    style={{
+                        transform: `rotate(${(index * 360) / cards.length}deg)`
+                    }}
+                />
+            ))}
         </div>
-    );
+        <div 
+            className="tire-container"
+            onMouseDown={handleMouseDown}
+        >
+            <img 
+                src={Tire} 
+                alt="Neumático" 
+                className="tire-image"
+                style={{ transform: `rotate(${rotation}deg)` }}
+            />
+        </div>
+    </div>
+);
 }
