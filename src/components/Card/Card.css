@@ -1,0 +1,24 @@
+.card{
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    width: 12.5rem;
+    transition: all 1.5s ease;
+}
+
+.card-image{
+    border-radius: .3rem;
+    width: 100%;
+}
+
+.card-title{
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: bold;
+    color: #333333;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: .5rem;
+    }
+}
