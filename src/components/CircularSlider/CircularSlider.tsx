@@ -1,222 +1,89 @@
 import './CircularSlider.css';
 import Tire from '/images/tire.webp';
-import React, { useState, useRef } from 'react';
 import { Card } from '../Card/Card';
+import { useCircularSlider } from '../../hooks/useCircularSlider';
+import type { CircularSliderProps } from './types';
 
-interface CircularSliderProps {
-    cards: Array<{
-        title: string;
-        image: string;
-    }>;
-}
-
-export function CircularSlider({cards}: CircularSliderProps) {
-    const [rotation, setRotation] = useState(0);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startAngle, setStartAngle] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    // Calculate the angle based on mouse/touch position
-    const getAngle = (clientX: number, clientY: number) => {
-        if (!containerRef.current) return 0;
-        const rect = containerRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height;
-        
-        const x = clientX - centerX;
-        const y = centerY - clientY;
-        
-        return Math.atan2(x, y) * (180 / Math.PI);
-    };
-
-    // Mouse events
-    const handleMouseDown = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-        setStartAngle(getAngle(e.clientX, e.clientY) - rotation);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const newAngle = getAngle(e.clientX, e.clientY) - startAngle;
-        setRotation(newAngle);
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-        e.preventDefault();
-        finishDrag();
-    };
-
-    // Touch events
-    const handleTouchStart = (e: React.TouchEvent) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        setIsDragging(true);
-        setStartAngle(getAngle(touch.clientX, touch.clientY) - rotation);
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const touch = e.touches[0];
-        const newAngle = getAngle(touch.clientX, touch.clientY) - startAngle;
-        setRotation(newAngle);
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-        e.preventDefault();
-        finishDrag();
-    };
-
-    // Common logic for ending drag (mouse up / touch end)
-    const finishDrag = () => {
-        setIsDragging(false);
-
-        // Angles in which the tire should snap to always show 3 images
-        const snapAngles = [-300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300];
-        
-        // Function to find the closest angle without normalizing
-        const findClosestAngle = (currentRotation: number, snapAngles: number[]) => {
-            let closestAngle = snapAngles[0];
-            let minDistance = Math.abs(currentRotation - snapAngles[0]);
-            
-            snapAngles.forEach(angle => {
-                const distance = Math.abs(currentRotation - angle);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestAngle = angle;
-                }
-            });
-            
-            // Also check "equivalent" angles by adding/subtracting 360
-            snapAngles.forEach(angle => {
-                // Check angle + 360
-                const angleUp = angle + 360;
-                const distanceUp = Math.abs(currentRotation - angleUp);
-                if (distanceUp < minDistance) {
-                    minDistance = distanceUp;
-                    closestAngle = angleUp;
-                }
-                
-                // Check angle - 360
-                const angleDown = angle - 360;
-                const distanceDown = Math.abs(currentRotation - angleDown);
-                if (distanceDown < minDistance) {
-                    minDistance = distanceDown;
-                    closestAngle = angleDown;
-                }
-            });
-            
-            return closestAngle;
-        };
-        
-        const closestAngle = findClosestAngle(rotation, snapAngles);
-        
-        console.log(`Rotation: ${rotation}, Closest: ${closestAngle}, Distance: ${Math.abs(rotation - closestAngle)}`);
-        
-        // Set the rotation to the closest angle
-        setRotation(closestAngle);
-    };
-
-    // Function to determine if a card is in the central position (0 degrees)
-    const getCardProperties = (cardIndex: number) => {
-        const cardAngle = (cardIndex * 360) / cards.length;
-        const totalRotation = rotation + cardAngle;
-        
-        // Normalize the angle to a range of -180 to 180
-        const normalizedAngle = ((totalRotation % 360) + 360) % 360;
-        const adjustedAngle = normalizedAngle > 180 ? normalizedAngle - 360 : normalizedAngle;
-        
-        // If the angle is very close to 0 (within a tolerance range)
-        const tolerance = 5; // 5 degrees of tolerance
-        if (Math.abs(adjustedAngle) <= tolerance) {
-            return { scale: 1.5, opacity: 1 };
+export function CircularSlider({ cards }: CircularSliderProps) {
+    const { rotation, containerRef, getCardProperties, dragHandlers } = useCircularSlider(
+        cards.length,
+        {
+            tolerance: 5,
+            centerScale: 1.5,
+            centerOpacity: 1,
+            defaultScale: 1,
+            defaultOpacity: 0.5,
         }
-        
-        return { scale: 1, opacity: 0.5 };
-    };
-
-    // Event listeners for mouse and touch
-    React.useEffect(() => {
-        if (isDragging) {
-            // Mouse events
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-            
-            // Touch events
-            document.addEventListener('touchmove', handleTouchMove, { passive: false });
-            document.addEventListener('touchend', handleTouchEnd, { passive: false });
-        }
-        
-        return () => {
-            // Cleanup mouse events
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-            
-            // Cleanup touch events
-            document.removeEventListener('touchmove', handleTouchMove);
-            document.removeEventListener('touchend', handleTouchEnd);
-        };
-    }, [isDragging, startAngle, rotation]);
+    );
 
     return (
-    <div className="circular-slider" ref={containerRef}>
         <div 
-            className="red-circle"
-            style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
+            className="circular-slider" 
+            ref={containerRef}
+            onMouseDown={dragHandlers.handleMouseDown}
+            onTouchStart={dragHandlers.handleTouchStart}
         >
-            {cards.map((_, index) => (
-                <div
-                    key={`point-${index}`}
-                    className="guide-point"
-                    style={{
-                        transform: `rotate(${(index * 360) / cards.length}deg)`
-                    }}
-                />
-            ))}
-        </div>
-        
-        {/* Container for the cards */}
-        <div 
-            className="cards-orbit"
-            style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
-        >
-            {cards.map((card, index) => (
-                <div
-                    key={`card-${index}`}
-                    className="card-container"
-                    style={{
-                        transform: `rotate(${(index * 360) / cards.length}deg)`
-                    }}
-                >
-                    <div 
-                        className="card-wrapper"
+            <div 
+                className="red-circle"
+                style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
+                onMouseDown={dragHandlers.handleMouseDown}
+                onTouchStart={dragHandlers.handleTouchStart}
+            >
+                {cards.map((_, index) => (
+                    <div
+                        key={`point-${index}`}
+                        className="guide-point"
                         style={{
-                            transform: `scale(${getCardProperties(index).scale})`,
-                            opacity: getCardProperties(index).opacity
+                            transform: `rotate(${(index * 360) / cards.length}deg)`
                         }}
+                    />
+                ))}
+            </div>
+            
+            {/* Container for the cards */}
+            <div 
+                className="cards-orbit" 
+                style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
+                onMouseDown={dragHandlers.handleMouseDown}
+                onTouchStart={dragHandlers.handleTouchStart}
+            >
+                {cards.map((card, index) => (
+                    <div
+                        key={`card-${index}`}
+                        className="card-container"
+                        style={{
+                            transform: `rotate(${(index * 360) / cards.length}deg)`
+                        }}
+                        onMouseDown={dragHandlers.handleMouseDown}
+                        onTouchStart={dragHandlers.handleTouchStart}
                     >
-                        <Card title={card.title} image={card.image} />
+                        <div 
+                            className="card-wrapper"
+                            style={{
+                                transform: `scale(${getCardProperties(index).scale})`,
+                                opacity: getCardProperties(index).opacity
+                            }}
+                            onMouseDown={dragHandlers.handleMouseDown}
+                            onTouchStart={dragHandlers.handleTouchStart}
+                        >
+                            <Card title={card.title} image={card.image} />
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
+            
+            <div 
+                className="tire-container"
+                onMouseDown={dragHandlers.handleMouseDown}
+                onTouchStart={dragHandlers.handleTouchStart}
+            >
+                <img 
+                    src={Tire} 
+                    alt="Neumático" 
+                    className="tire-image"
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                />
+            </div>
         </div>
-        
-        <div 
-            className="tire-container"
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
-        >
-            <img 
-                src={Tire} 
-                alt="Neumático" 
-                className="tire-image"
-                style={{ transform: `rotate(${rotation}deg)` }}
-            />
-        </div>
-    </div>
-);
+    );
 }
